@@ -2,24 +2,18 @@ import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QPixmap, QTransform, QPainter
 from PyQt5.QtCore import Qt, QTimer
-
-# Placeholder for the external module
-# Replace this with the actual module that provides degree values
-class ExternalModule:
-    @staticmethod
-    def get_degree():
-        """
-        This method should return the current degree value from the external module.
-        Replace this with the actual implementation.
-        """
-        # For now, return a static value or simulate data
-        return 45.0  # Example: 45 degrees
+from sensor_module import get_sensor_degree  # Import the function to get sensor data
 
 
 class CompassApp(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
+
+        # Set up a timer to update the compass direction automatically
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_direction_from_sensor)
+        self.timer.start(100)  # Update every 100 milliseconds
 
     def initUI(self):
         self.setWindowTitle('Compass App')
@@ -80,17 +74,12 @@ class CompassApp(QWidget):
         # Display the initial compass
         self.update_compass_display()
 
-        # Set up a timer to update the compass direction automatically
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_direction_from_external_module)
-        self.timer.start(100)  # Update every 100 milliseconds (0.1 seconds)
-
-    def update_direction_from_external_module(self):
+    def update_direction_from_sensor(self):
         """
-        Fetch the degree value from the external module and update the compass.
+        Fetch the degree value from the sensor module and update the compass.
         """
-        # Get the degree value from the external module
-        new_direction = ExternalModule.get_degree()
+        # Get the degree value from the sensor module
+        new_direction = get_sensor_degree()
 
         # Update the direction
         self.direction = new_direction
