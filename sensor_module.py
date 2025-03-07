@@ -4,7 +4,7 @@ import math
 import time
 
 class SensorModule:
-    def __init__(self, port='COM7', baudrate=9600):
+    def __init__(self, port='COM3', baudrate=9600):
         self.port = port
         self.baudrate = baudrate
         self.degree = 0
@@ -16,20 +16,14 @@ class SensorModule:
         self.thread.start()
 
     def connect_serial(self):
-        """
-        Establish a connection to the serial port.
-        """
         try:
-            self.serial_connection = serial.Serial(self.port, self.baudrate, timeout=1)
+            self.serial_connection = serial.Serial(self.port, self.baudrate, timeout=0.2)
             print(f"Connected to {self.port} at {self.baudrate} baud.")
         except serial.SerialException as e:
             print(f"Failed to connect to {self.port}: {e}")
             self.running = False
 
     def read_serial_data(self):
-        """
-        Read X, Y, Z values from the serial port and convert them to degrees.
-        """
         while self.running:
             if self.serial_connection and self.serial_connection.is_open:
                 try:
@@ -38,7 +32,9 @@ class SensorModule:
                     if line:
                         # Parse the X, Y, Z values (assuming they are comma-separated)
                         try:
-                            x, y, z = map(float, line.split(','))
+                            #x, y, z = map(float, line.split(','))
+                            x = float(line.split("X:")[1].split(",")[0].strip())
+                            y = float(line.split("Y:")[1].split(",")[0].strip())
                             # Calculate the heading (degree) using atan2
                             heading = math.atan2(y, x) * (180 / math.pi)
                             # Normalize the heading to 0-360 degrees
@@ -62,9 +58,6 @@ class SensorModule:
             return self.degree
 
     def stop(self):
-        """
-        Stop the sensor module and close the serial connection.
-        """
         self.running = False
         if self.serial_connection and self.serial_connection.is_open:
             self.serial_connection.close()
@@ -75,7 +68,4 @@ class SensorModule:
 sensor = SensorModule()
 
 def get_sensor_degree():
-    """
-    Function to retrieve the latest degree value from the sensor module.
-    """
     return sensor.get_degree()
