@@ -1,0 +1,5 @@
+Run the "compass_visualize_withPyQt5" file in pycharm or vscode.this file receives data as degree using "sensor_module"
+and we visualize it using PyQt5.
+
+"sensor_module" receives data from a port(example:COM4,baudrate=9600).
+data is received in a string format(X: 190.44, Y: -438.84, Z: -177.56), then convert it to degree.

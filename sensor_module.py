@@ -4,11 +4,11 @@ import math
 import time
 
 class SensorModule:
-    def __init__(self, port='COM3', baudrate=9600):
+    def __init__(self, port='COM4', baudrate=9600):
         self.port = port
         self.baudrate = baudrate
         self.degree = 0
-        self.lock = threading.Lock()  # Thread lock to ensure thread-safe access
+        self.lock = threading.Lock()
         self.running = True
         self.serial_connection = None
         self.thread = threading.Thread(target=self.read_serial_data, daemon=True)
@@ -29,10 +29,10 @@ class SensorModule:
                 try:
                     # Read a line from the serial port
                     line = self.serial_connection.readline().decode('utf-8').strip()
-                    if line:
-                        # Parse the X, Y, Z values (assuming they are comma-separated)
+                    if "X:" not in line or "," not in line:
+                        continue
+                    elif line:
                         try:
-                            #x, y, z = map(float, line.split(','))
                             x = float(line.split("X:")[1].split(",")[0].strip())
                             y = float(line.split("Y:")[1].split(",")[0].strip())
                             # Calculate the heading (degree) using atan2
@@ -48,12 +48,9 @@ class SensorModule:
                     print(f"Error reading serial data: {e}")
             else:
                 print("Serial connection is not open.")
-                time.sleep(1)  # Wait before retrying
+                time.sleep(1)
 
     def get_degree(self):
-        """
-        Retrieve the latest degree value.
-        """
         with self.lock:
             return self.degree
 
