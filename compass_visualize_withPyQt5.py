@@ -109,16 +109,16 @@ class CompassApp(QWidget):
 
         painter.drawPixmap(0, 0, self.compass_circle)
 
-        display_center = self.compass_circle.rect().center()
-        #circle_center = self.compass_circle.rect().center()
-        #needle_center = self.compass_needle.rect().center()
+        #display_center = self.compass_circle.rect().center()
+        circle_center = self.compass_circle.rect().center()
+        needle_center = self.compass_needle.rect().center()
 
         transform = QTransform()
-        #transform.translate(circle_center.x(), circle_center.y())
-        transform.translate(display_center.x(), display_center.y())
+        transform.translate(circle_center.x(), circle_center.y()-2)
+        #transform.translate(display_center.x(), display_center.y())
         transform.rotate(-self.direction)
-        #transform.translate(-needle_center.x(), -needle_center.y())
-        transform.translate(-self.compass_needle.width() / 2, -self.compass_needle.height() / 2)
+        transform.translate(-needle_center.x(), -needle_center.y())
+        #transform.translate(-self.compass_needle.width() / 2, -self.compass_needle.height() / 2)
 
         painter.setTransform(transform)
         painter.drawPixmap(0, 0, self.compass_needle)
