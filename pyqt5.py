@@ -1,7 +1,7 @@
 import sys
 import os
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QSizePolicy, QComboBox, QPushButton
+    QApplication, QWidget, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QSizePolicy, QComboBox
 )
 from PyQt5.QtGui import QPixmap, QTransform, QPainter
 from PyQt5.QtCore import Qt, QTimer
@@ -42,24 +42,17 @@ class CompassApp(QWidget):
         # Add a horizontal layout for the COM port selection
         com_layout = QHBoxLayout()
 
-        # Label for COM port selection
-        com_label = QLabel("Select COM Port:", self)
-        com_label.setStyleSheet("font-size: 14px; font-weight: bold;")
-        com_layout.addWidget(com_label)
-
         # Dropdown for COM ports
         self.com_port_combo = QComboBox(self)
-        self.com_port_combo.setStyleSheet("font-size: 14px;")
-        self.com_port_combo.addItem("Select COM Port")
+        self.com_port_combo.setStyleSheet("font-size: 30px;")  # Increase font size
+        self.com_port_combo.setFixedSize(200, 40)  # Set a fixed size for the dropdown
+        self.com_port_combo.addItem("COM Port")
         self.populate_com_ports()  # Populate available COM ports
+        self.com_port_combo.currentIndexChanged.connect(self.connect_to_com_port)  # Auto-connect on selection
         com_layout.addWidget(self.com_port_combo)
 
-        # Connect button
-        self.connect_button = QPushButton("Connect", self)
-        self.connect_button.setStyleSheet("font-size: 14px; font-weight: bold;")
-        self.connect_button.clicked.connect(self.connect_to_com_port)
-        com_layout.addWidget(self.connect_button)
-
+        # Add the COM port dropdown to the top-left corner (0, 0)
+        com_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         main_layout.addLayout(com_layout)
 
         # Add a spacer to push the compass display to the center
@@ -128,9 +121,12 @@ class CompassApp(QWidget):
             print("Please select a valid COM port.")
             return
 
-        # Initialize the sensor module with the selected COM port
-        self.sensor = SensorModule(port=selected_port)
-        print(f"Connected to {selected_port}")
+        try:
+            # Initialize the sensor module with the selected COM port
+            self.sensor = SensorModule(port=selected_port)
+            print(f"Connected to {selected_port}")
+        except Exception as e:
+            print(f"Failed to connect to {selected_port}: {e}")
 
     def update_direction_from_sensor(self):
         """Update the compass direction based on sensor data."""
