@@ -121,6 +121,7 @@
   ('fractions', 'C:\\Program Files\\Python312\\Lib\\fractions.py', 'PYMODULE'),
   ('getopt', 'C:\\Program Files\\Python312\\Lib\\getopt.py', 'PYMODULE'),
   ('gettext', 'C:\\Program Files\\Python312\\Lib\\gettext.py', 'PYMODULE'),
+  ('glob', 'C:\\Program Files\\Python312\\Lib\\glob.py', 'PYMODULE'),
   ('gzip', 'C:\\Program Files\\Python312\\Lib\\gzip.py', 'PYMODULE'),
   ('hashlib', 'C:\\Program Files\\Python312\\Lib\\hashlib.py', 'PYMODULE'),
   ('importlib',
@@ -227,6 +228,34 @@
    'PYMODULE'),
   ('serial.serialwin32',
    'C:\\Program Files\\Python312\\Lib\\site-packages\\serial\\serialwin32.py',
+   'PYMODULE'),
+  ('serial.tools',
+   'C:\\Program '
+   'Files\\Python312\\Lib\\site-packages\\serial\\tools\\__init__.py',
+   'PYMODULE'),
+  ('serial.tools.list_ports',
+   'C:\\Program '
+   'Files\\Python312\\Lib\\site-packages\\serial\\tools\\list_ports.py',
+   'PYMODULE'),
+  ('serial.tools.list_ports_common',
+   'C:\\Program '
+   'Files\\Python312\\Lib\\site-packages\\serial\\tools\\list_ports_common.py',
+   'PYMODULE'),
+  ('serial.tools.list_ports_linux',
+   'C:\\Program '
+   'Files\\Python312\\Lib\\site-packages\\serial\\tools\\list_ports_linux.py',
+   'PYMODULE'),
+  ('serial.tools.list_ports_osx',
+   'C:\\Program '
+   'Files\\Python312\\Lib\\site-packages\\serial\\tools\\list_ports_osx.py',
+   'PYMODULE'),
+  ('serial.tools.list_ports_posix',
+   'C:\\Program '
+   'Files\\Python312\\Lib\\site-packages\\serial\\tools\\list_ports_posix.py',
+   'PYMODULE'),
+  ('serial.tools.list_ports_windows',
+   'C:\\Program '
+   'Files\\Python312\\Lib\\site-packages\\serial\\tools\\list_ports_windows.py',
    'PYMODULE'),
   ('serial.win32',
    'C:\\Program Files\\Python312\\Lib\\site-packages\\serial\\win32.py',
