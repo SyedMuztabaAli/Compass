@@ -4,7 +4,7 @@ import math
 import time
 
 class SensorModule:
-    def __init__(self, port='COM4', baudrate=9600):
+    def __init__(self, port='COM1', baudrate=9600):
         self.port = port
         self.baudrate = baudrate
         self.degree = 0
