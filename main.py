@@ -117,7 +117,7 @@ class CompassApp(QWidget):
     def connect_to_com_port(self):
         """Connect to the selected COM port."""
         selected_port = self.com_port_combo.currentText()
-        if selected_port == "Select COM Port":
+        if selected_port == "COM Port":
             print("Please select a valid COM port.")
             return
 
