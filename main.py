@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QPixmap, QTransform, QPainter
 from PyQt5.QtCore import Qt, QTimer
-from sensor_module import SensorModule, get_sensor_degree  # Import the sensor module
+from sensor_module import SensorModule# Import the sensor module
 
 def resource_path(relative_path):
     """ Get the absolute path to a resource, works for dev and for PyInstaller."""
@@ -122,6 +122,8 @@ class CompassApp(QWidget):
             return
 
         try:
+            if self.sensor:
+                self.sensor.stop()
             # Initialize the sensor module with the selected COM port
             self.sensor = SensorModule(port=selected_port)
             print(f"Connected to {selected_port}")
@@ -131,7 +133,7 @@ class CompassApp(QWidget):
     def update_direction_from_sensor(self):
         """Update the compass direction based on sensor data."""
         if self.sensor:
-            new_direction = get_sensor_degree()
+            new_direction = self.sensor.get_degree()
             self.direction = new_direction
             self.degree_label.setText(f"Direction: {self.direction:.2f}°")
             self.update_compass_display()

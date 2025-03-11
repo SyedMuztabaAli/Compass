@@ -4,7 +4,7 @@ import math
 import time
 
 class SensorModule:
-    def __init__(self, port='COM1', baudrate=9600):
+    def __init__(self, port=None, baudrate=9600):
         self.port = port
         self.baudrate = baudrate
         self.degree = 0
@@ -62,7 +62,7 @@ class SensorModule:
 
 
 # Create a global instance of the SensorModule
-sensor = SensorModule()
+# sensor = SensorModule()
 
-def get_sensor_degree():
-    return sensor.get_degree()
+# def get_sensor_degree():
+#     return sensor.get_degree()
