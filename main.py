@@ -5,12 +5,11 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QPixmap, QTransform, QPainter
 from PyQt5.QtCore import Qt, QTimer
-from sensor_module import SensorModule# Import the sensor module
+from sensor_module import SensorModule  # Import the sensor module
 
 def resource_path(relative_path):
     """ Get the absolute path to a resource, works for dev and for PyInstaller."""
     try:
-        # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
     except Exception:
         base_path = os.path.abspath(".")
@@ -23,45 +22,37 @@ class CompassApp(QWidget):
         super().__init__()
         self.initUI()
 
-        # Initialize the sensor module
         self.sensor = None
 
-        # Set up a timer to update the compass direction automatically
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_direction_from_sensor)
-        self.timer.start(100)  # Update every 100 milliseconds
+        self.timer.start(100)
 
     def initUI(self):
         self.setWindowTitle('Compass App')
         self.setGeometry(100, 100, 400, 400)
-
-        self.setStyleSheet("background-color: lightblue;")
+        self.setStyleSheet("background-color: black;")
 
         main_layout = QVBoxLayout()
 
-        # Add a horizontal layout for the COM port selection
+        # COM port dropdown
         com_layout = QHBoxLayout()
-
-        # Dropdown for COM ports
         self.com_port_combo = QComboBox(self)
-        self.com_port_combo.setStyleSheet("font-size: 30px;")  # Increase font size
-        self.com_port_combo.setFixedSize(200, 40)  # Set a fixed size for the dropdown
+        self.com_port_combo.setStyleSheet("font-size: 30px;")
+        self.com_port_combo.setFixedSize(200, 40)
         self.com_port_combo.addItem("COM Port")
-        self.populate_com_ports()  # Populate available COM ports
-        self.com_port_combo.currentIndexChanged.connect(self.connect_to_com_port)  # Auto-connect on selection
+        self.populate_com_ports()
+        self.com_port_combo.currentIndexChanged.connect(self.connect_to_com_port)
         com_layout.addWidget(self.com_port_combo)
-
-        # Add the COM port dropdown to the top-left corner (0, 0)
         com_layout.setAlignment(Qt.AlignLeft | Qt.AlignTop)
         main_layout.addLayout(com_layout)
 
-        # Add a spacer to push the compass display to the center
+        # Spacer (top)
         spacer_top = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         main_layout.addItem(spacer_top)
 
-        # Compass display layout
+        # Compass display
         h_layout = QHBoxLayout()
-
         spacer_left = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         h_layout.addItem(spacer_left)
 
@@ -71,67 +62,74 @@ class CompassApp(QWidget):
 
         spacer_right = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
         h_layout.addItem(spacer_right)
-
         main_layout.addLayout(h_layout)
 
         # Degree label
         self.degree_label = QLabel(self)
         self.degree_label.setAlignment(Qt.AlignCenter)
-        self.degree_label.setStyleSheet("font-size: 20px; font-weight: bold;")
+        self.degree_label.setStyleSheet("font-size: 20px; font-weight: bold; color: white;")
         main_layout.addWidget(self.degree_label)
 
-        # Add a spacer to push the compass display to the center
+        # Spacer (bottom)
         spacer_bottom = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         main_layout.addItem(spacer_bottom)
 
         self.setLayout(main_layout)
 
-        # Load compass images
-        self.compass_circle = QPixmap(resource_path(os.path.join("images", "compass_circle.jpeg")))
+        # Load images
+        self.compass_circle = QPixmap(resource_path(os.path.join("images", "compass_circle.png")))
         self.compass_needle = QPixmap(resource_path(os.path.join("images", "compass_needle.png")))
 
         if self.compass_circle.isNull() or self.compass_needle.isNull():
             print("Error: Failed to load compass images.")
             sys.exit(1)
 
-        # Resize the compass images
-        new_size1 = self.compass_circle.size() * 0.5
-        new_size2 = self.compass_needle.size() * 1.1
+        # Resize images
+        new_size1 = self.compass_circle.size()
+        new_size2 = self.compass_needle.size()*0.8
         self.compass_circle = self.compass_circle.scaled(new_size1, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.compass_needle = self.compass_needle.scaled(new_size2, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
         self.compass_display.setFixedSize(self.compass_circle.size())
 
-        self.direction = 0  # Initial direction
+        # Combine images into one base image
+        self.combined_compass = QPixmap(self.compass_circle.size())
+        self.combined_compass.fill(Qt.transparent)
 
-        # Display the initial compass
+        painter = QPainter(self.combined_compass)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.drawPixmap(0, 0, self.compass_circle)
+
+        circle_center = self.compass_circle.rect().center()
+        needle_offset = self.compass_needle.rect().center()
+        needle_x = circle_center.x() - needle_offset.x()
+        needle_y = circle_center.y() - needle_offset.y()
+        painter.drawPixmap(needle_x, needle_y, self.compass_needle)
+        painter.end()
+
+        self.direction = 0
         self.update_compass_display()
 
     def populate_com_ports(self):
-        """Populate the COM port dropdown with available COM ports."""
         import serial.tools.list_ports
         ports = serial.tools.list_ports.comports()
         for port in ports:
             self.com_port_combo.addItem(port.device)
 
     def connect_to_com_port(self):
-        """Connect to the selected COM port."""
         selected_port = self.com_port_combo.currentText()
         if selected_port == "COM Port":
             print("Please select a valid COM port.")
             return
-
         try:
             if self.sensor:
                 self.sensor.stop()
-            # Initialize the sensor module with the selected COM port
             self.sensor = SensorModule(port=selected_port)
             print(f"Connected to {selected_port}")
         except Exception as e:
             print(f"Failed to connect to {selected_port}: {e}")
 
     def update_direction_from_sensor(self):
-        """Update the compass direction based on sensor data."""
         if self.sensor:
             new_direction = self.sensor.get_degree()
             self.direction = new_direction
@@ -139,28 +137,24 @@ class CompassApp(QWidget):
             self.update_compass_display()
 
     def update_compass_display(self):
-        """Update the compass display with the current direction."""
-        pixmap = QPixmap(self.compass_circle.size())
-        pixmap.fill(Qt.transparent)
+        rotated_pixmap = QPixmap(self.combined_compass.size())
+        rotated_pixmap.fill(Qt.transparent)
 
-        painter = QPainter(pixmap)
+        painter = QPainter(rotated_pixmap)
         painter.setRenderHint(QPainter.Antialiasing)
 
-        painter.drawPixmap(0, 0, self.compass_circle)
-
-        circle_center = self.compass_circle.rect().center()
-        needle_center = self.compass_needle.rect().center()
+        center = self.combined_compass.rect().center()
 
         transform = QTransform()
-        transform.translate(circle_center.x(), circle_center.y() - 2)
+        transform.translate(center.x(), center.y())
         transform.rotate(-self.direction)
-        transform.translate(-needle_center.x(), -needle_center.y())
+        transform.translate(-center.x(), -center.y())
 
         painter.setTransform(transform)
-        painter.drawPixmap(0, 0, self.compass_needle)
+        painter.drawPixmap(0, 0, self.combined_compass)
         painter.end()
 
-        self.compass_display.setPixmap(pixmap)
+        self.compass_display.setPixmap(rotated_pixmap)
 
 
 if __name__ == '__main__':
